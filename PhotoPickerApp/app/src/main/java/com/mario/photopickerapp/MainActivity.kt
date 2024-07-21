@@ -2,6 +2,7 @@ package com.mario.photopickerapp
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -56,10 +57,14 @@ fun LoginPage(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .padding(horizontal = 8.dp)
     ) {
+        val context = LocalContext.current
+        val prefs = context.getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val savedEmail = prefs.getString("email", "")!!
+        val savedPassword = prefs.getString("pass", "")!!
+
         var email by remember { mutableStateOf(("")) }
         var password by remember { mutableStateOf(("")) }
         var cbState by remember { mutableStateOf((false)) }
-        val context = LocalContext.current
 
         OutlinedTextField(value = email, onValueChange = { email = it }, label = {
             Text(
@@ -94,7 +99,7 @@ fun LoginPage(modifier: Modifier = Modifier) {
 }
 
 fun saveData(email:String, password:String, cbState:Boolean, context: Context){
-    val editor = context.getSharedPreferences("user_data", Context.MODE_APPEND).edit()
+    val editor = context.getSharedPreferences("user_data", Context.MODE_PRIVATE).edit()
 
     if(cbState){
         editor.putString("email", email)
@@ -104,6 +109,8 @@ fun saveData(email:String, password:String, cbState:Boolean, context: Context){
         editor.putString("pass", "")
     }
     editor.apply()
+    val i = Intent(context, PictureChooserActivity::class.java)
+    context.startActivity(i)
 }
 
 @Preview(showBackground = true)
